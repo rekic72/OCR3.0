@@ -24,6 +24,7 @@ class OCRApp(tk.Frame):
         self.master.protocol("WM_DELETE_WINDOW", self.on_closing)  # Add this line
         self.pack()
         self.create_widgets()
+        self.processed_files = set()
 
     def create_widgets(self):
         self.upload_button = tk.Button(self, text="Upload File", command=self.upload_file)
@@ -41,7 +42,13 @@ class OCRApp(tk.Frame):
     def upload_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
         if file_path:
+            if file_path in self.processed_files:
+                self.result_label.config(
+                    text=f"Error: The file '{os.path.basename(file_path)}' has already been uploaded and processed.")
+                return
+
             try:
+                self.processed_files.add(file_path)
                 word_counts = process_file(file_path)
 
                 # Create a DataFrame from the word counts dictionary
