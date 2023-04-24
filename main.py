@@ -4,17 +4,13 @@ import sqlite3
 import os
 import pandas as pd
 from config import process_file, extract_text_from_pdf, count_words, word_counts
+from db_queries.db_queries import create_table_query
 
 # connect sqlitedb and create Database
 conn = sqlite3.connect("testdb3.db")
 mycursor = conn.cursor()
 
-mycursor.execute(''' 
-            CREATE TABLE IF NOT EXISTS pdf_text 
-            (word_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            text TEXT,
-            count INT)    
-            ''')
+mycursor.execute(create_table_query)
 
 
 class OCRApp(tk.Frame):
