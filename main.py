@@ -17,15 +17,16 @@ class OCRApp(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)  # Add this line
+        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)  #closing protocol
         self.pack()
         self.create_widgets()
-        self.processed_files = set()
+        self.processed_files = set() #used for storing file_paths
 
     def create_widgets(self):
         self.upload_button = tk.Button(self, text="Upload File", command=self.upload_file)
         self.upload_button.pack()
 
+        #display status messages
         self.result_label = tk.Label(self, text="")
         self.result_label.pack()
 
