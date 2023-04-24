@@ -1,14 +1,9 @@
 import collections
 import configparser
-import os
-import sqlite3
-
 import cv2
 import fitz
-import mysql.connector
 import numpy as np
 import pytesseract
-import pandas as pd
 
 config = configparser.ConfigParser()
 config.read("config/config.ini")
