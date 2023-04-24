@@ -77,7 +77,7 @@ class OCRApp(tk.Frame):
     def print_database_contents(self):
         mycursor.execute("SELECT * FROM pdf_text")
         rows = mycursor.fetchall()
-        db_contents = "\nDatabase Contents:\nword_id | Text | Count\n"
+        db_contents = "\nDatabase Contents:\nword_id   |   Text   |   Count\n"
         for row in rows:
             db_contents += f"{row[0]} | {row[1]} | {row[2]}\n"
 
