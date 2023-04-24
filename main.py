@@ -17,24 +17,30 @@ class OCRApp(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)  #closing protocol
-        self.pack()
+        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)  # closing protocol
+        self.grid(sticky="nsew")
         self.create_widgets()
-        self.processed_files = set() #used for storing file_paths
+        self.processed_files = set()  # used for storing file_paths
 
     def create_widgets(self):
         self.upload_button = tk.Button(self, text="Upload File", command=self.upload_file)
-        self.upload_button.pack()
+        self.upload_button.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10, 0))
 
-        #display status messages
         self.result_label = tk.Label(self, text="")
-        self.result_label.pack()
+        self.result_label.grid(row=1, column=0, sticky="w", padx=(10, 0), pady=(10, 0))
 
         self.database_contents = tk.Text(self, wrap=tk.WORD, height=10, width=50)
-        self.database_contents.pack()
+        self.database_contents.grid(row=2, column=0, sticky="nsew", padx=(10, 0), pady=(10, 0))
+
+        self.scrollbar = tk.Scrollbar(self, command=self.database_contents.yview)
+        self.scrollbar.grid(row=2, column=1, sticky="ns", pady=(10, 0))
+        self.database_contents.config(yscrollcommand=self.scrollbar.set)
 
         self.print_db_button = tk.Button(self, text="Print database", command=self.print_database_contents)
-        self.print_db_button.pack()
+        self.print_db_button.grid(row=3, column=0, sticky="w", padx=(10, 0), pady=(10, 0))
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(2, weight=1)
 
     def upload_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
@@ -87,9 +93,11 @@ class OCRApp(tk.Frame):
 
 def main():
     root = tk.Tk()
-    root.geometry("500x300")  # Set the width and height of the window here
+    root.geometry("500x300")
     root.title("OCR Text Extraction")
     app = OCRApp(master=root)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
     app.mainloop()
 
 
