@@ -5,12 +5,15 @@ import os
 import pandas as pd
 from config import process_file, extract_text_from_pdf, count_words, word_counts
 from db_queries.db_queries import create_table_query
+import openai
 
 # connect sqlitedb and create Database
 conn = sqlite3.connect("testdb3.db")
 mycursor = conn.cursor()
 
 mycursor.execute(create_table_query)
+
+openai.api_key = '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'
 
 
 class OCRApp(tk.Frame):
@@ -41,6 +44,28 @@ class OCRApp(tk.Frame):
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=1)
+
+        # ChatGPT input field
+        self.chat_input = tk.Entry(self)
+        self.chat_input.grid(row=4, column=0, sticky="ew", padx=(10, 0), pady=(10, 0))
+
+        # ChatGPT output field
+        self.chat_output = tk.Text(self, wrap=tk.WORD, height=5, width=50)
+        self.chat_output.grid(row=5, column=0, sticky="nsew", padx=(10, 0), pady=(10, 0))
+
+        # Add a scrollbar to the chat_output widget
+        self.chat_output_scrollbar = tk.Scrollbar(self, command=self.chat_output.yview)
+        self.chat_output_scrollbar.grid(row=5, column=1, sticky="ns", pady=(10, 0))
+        self.chat_output.config(yscrollcommand=self.chat_output_scrollbar.set)
+
+        # ChatGPT submit button
+        self.chat_button = tk.Button(self, text="Chat with GPT", command=self.chat_with_gpt)
+        self.chat_button.grid(row=6, column=0, sticky="w", padx=(10, 0), pady=(10, 0))
+
+        # Make the chat_input widget stretch when the window is resized
+        self.columnconfigure(0, weight=1)
+        # Make the chat_output widget stretch vertically when the window is resized
+        self.rowconfigure(5, weight=1)
 
     def upload_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
@@ -89,6 +114,28 @@ class OCRApp(tk.Frame):
 
         self.database_contents.delete(1.0, tk.END)
         self.database_contents.insert(tk.END, db_contents)
+
+    def chat_with_gpt(self):
+        user_message = self.chat_input.get()
+        if user_message:
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are a helpful assistant."
+                        },
+                        {
+                            "role": "user",
+                            "content": user_message
+                        }
+                    ]
+                )
+                self.chat_output.delete(1.0, tk.END) ###used for deleting former response messages###
+                self.chat_output.insert(tk.END, response['choices'][0]['message']['content'])
+            except Exception as e:
+                self.chat_output.config(text=f"Error processing the chat: {e}")
 
 
 def main():
