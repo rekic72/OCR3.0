@@ -15,6 +15,7 @@ pytesseract.pytesseract.tesseract_cmd = config.get("DEFAULT", "tesseract_path")
 nlp = spacy.load("de_core_news_sm")
 print("Spacy model loaded successfully")
 
+
 def process_file(file_path):
     if file_path.endswith('.pdf'):
         extracted_text = extract_text_from_pdf(file_path)
@@ -50,6 +51,15 @@ def extract_text_from_pdf(filename):
                 print("Drug:", drug)
 
         return text
+
+
+# def count_words_noFilter(text):
+
+#   wordsNoFilter = df[['Text']].values.tolist()
+#   print(wordsNoFilter)
+
+# Count the filtered words
+#  return collections.Counter(wordsNoFilter)
 
 
 def count_words(text):

@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 import sqlite3
 import os
 import pandas as pd
 from config import process_file, extract_text_from_pdf, count_words, word_counts
 from db_queries.db_queries import create_table_query
 import openai
+import openpyxl
 
 # connect sqlitedb and create Database
 conn = sqlite3.connect("testdb3.db")
@@ -13,7 +15,7 @@ mycursor = conn.cursor()
 
 mycursor.execute(create_table_query)
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 
 class OCRApp(tk.Frame):
@@ -32,9 +34,10 @@ class OCRApp(tk.Frame):
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.scrollable_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
+        self.message_template = tk.StringVar(value="Choose a template")  # Default template
+
         self.create_widgets()
         self.processed_files = set()  # used for storing file_paths
-
 
     def create_widgets(self):
         self.upload_button = tk.Button(self, text="Upload File", command=self.upload_file)
@@ -61,6 +64,28 @@ class OCRApp(tk.Frame):
         self.gpt_response.grid(row=7, column=0, sticky="nsew", padx=(10, 0), pady=(10, 0))
 
         self.database_contents.bind("<ButtonRelease-1>", self.on_text_widget_click)
+
+        # Template selection buttons
+        self.template_dropdown = ttk.Combobox(self, textvariable=self.message_template, width=35)
+        self.template_dropdown['values'] = (
+            'Suche nach präventiven Maßnahmen', 'Erkläre Fachbegriffe', 'Erzähle mir alles über')
+        self.template_dropdown.grid(row=4, column=0, sticky="w", padx=(10, 0), pady=(10, 0))
+        self.template_dropdown.bind('<<ComboboxSelected>>', self.handle_template_selection)
+
+    def handle_template_selection(self, event):
+        selected_template = self.template_dropdown.get()
+
+        if selected_template == 'Suche nach präventiven Maßnahmen':
+            self.set_message_template("Suche nach präventiven Maßnahmen")
+        elif selected_template == 'Erkläre Fachbegriffe':
+            self.set_message_template("Erkläre Fachbegriffe")
+        elif selected_template == 'Erzähle mir alles über':
+            self.set_message_template("Erzähle mir alles über")
+
+    def set_message_template(self, template_name):
+        self.message_template.set(template_name)
+        print(f"Selected template: {self.message_template.get()}")
+        self.result_label.config(text=f"Selected template: {self.message_template.get}")
 
     def on_text_widget_click(self, event):
         # Clear any previous selection
@@ -142,7 +167,18 @@ class OCRApp(tk.Frame):
 
         print(f"Selected word: '{selected_word}'")
 
-        message_template = f"Tell me everything about: {selected_word}"
+        # message_template = f"Welche präventiven Maßnahmen könnten für einen Patienten empfohlen werden, der folgende Symptome hat: {selected_word}"
+        if self.message_template.get() == "Suche nach präventiven Maßnahmen":
+            message_template = f"Welche präventiven Maßnahmen könnten für einen Patienten empfohlen werden, der folgende Symptome hat: {selected_word}"
+            print(message_template)
+        elif self.message_template.get() == "Erkläre Fachbegriffe":
+            message_template = f" Erkläre mir die medizinischen Begriffe folgender Liste, lasse nichtmedizische Begriffe leer: {selected_word}"
+            print(message_template)
+        elif self.message_template.get() == "Erzähle mir alles über":
+            message_template = f"Erzähle mir alles über: {selected_word} "
+            print(message_template)
+        else:
+            message_template = f"Erzähle mir alles über: {selected_word}"
 
         try:
             response = openai.ChatCompletion.create(
