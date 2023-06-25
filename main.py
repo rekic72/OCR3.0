@@ -197,10 +197,13 @@ class OCRApp(tk.Frame):
 
 def main():
     root = tk.Tk()
-    root.geometry("800x600")
     root.title("OCR Text Extraction")
     app = OCRApp(master=root)
     app.pack(side="left", fill="both", expand=True)
+    root.update_idletasks()
+    width = root.winfo_width()
+    height = root.winfo_height()
+    root.geometry(f"{width}x{height}")
     root.mainloop()
 
 
