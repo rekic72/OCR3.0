@@ -13,7 +13,7 @@ pytesseract.pytesseract.tesseract_cmd = config.get("DEFAULT", "tesseract_path")
 
 # Load the German model from spacy
 nlp = spacy.load("de_core_news_sm")
-print("Spacy model loaded")
+print("Spacy model loaded successfully")
 
 def process_file(file_path):
     if file_path.endswith('.pdf'):
@@ -45,7 +45,7 @@ def extract_text_from_pdf(filename):
             # Look for the three words following "Therapieempfehlung"
             index = text.find("Therapieempfehlung")
             if index != -1:
-                words_after = text[index:].split()[1:5]  # Get the next three words
+                words_after = text[index:].split()[1:5]  # Get the next four words
                 drug = " ".join(words_after)
                 print("Drug:", drug)
 

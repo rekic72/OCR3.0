@@ -13,7 +13,7 @@ mycursor = conn.cursor()
 
 mycursor.execute(create_table_query)
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 
 class OCRApp(tk.Frame):
