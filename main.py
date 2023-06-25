@@ -24,16 +24,6 @@ class OCRApp(tk.Frame):
         self.master = master
         self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        # Create canvas and scrollbar
-        self.canvas = tk.Canvas(self.master)
-        self.scrollbar = tk.Scrollbar(self.master, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = tk.Frame(self.canvas)
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.scrollbar.pack(side="right", fill="y")
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.scrollable_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-
         self.message_template = tk.StringVar(value="Choose a template")  # Default template
 
         self.create_widgets()
@@ -85,7 +75,7 @@ class OCRApp(tk.Frame):
     def set_message_template(self, template_name):
         self.message_template.set(template_name)
         print(f"Selected template: {self.message_template.get()}")
-        self.result_label.config(text=f"Selected template: {self.message_template.get}")
+        self.result_label.config(text=f"Selected template: {self.message_template.get()}")
 
     def on_text_widget_click(self, event):
         # Clear any previous selection
